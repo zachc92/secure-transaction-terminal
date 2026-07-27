@@ -1,0 +1,18 @@
+{
+  "name": "secure-transaction-terminal-monorepo",
+  "version": "1.0.0",
+  "description": "Enterprise Multi-Role Virtual Transaction Checkout Terminal",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "concurrently \"npm run dev-start --prefix server\" \"npm run dev --prefix client\"",
+    "install-all": "npm install && npm install --prefix server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com"
+  },
+  "dependencies": {
+    "concurrently": "^10.0.4"
+  }
+}
