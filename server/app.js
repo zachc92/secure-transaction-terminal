@@ -1,18 +1,13 @@
 import express from 'express';
 import session from 'express-session';
 import path from 'node:path';
-import pkg from 'pg';
-import bcrypt from 'bcryptjs';
+// import pkg from 'pg';
+// import bcrypt from 'bcryptjs';
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 
-import { indexRouter } from './routes/indexRouter.js';
-
-const { Pool } = pkg;
-
-const pool = new Pool({
-    connectionString: `postgresql://${process.env.USERNAME}:${process.env.PASSWORD}@localhost:${process.env.DBPORT}/${process.env.DBNAME}`
-});
+import { indexRouter } from './src/routes/indexRouter.js';
+import { authRouter } from './src/routes/authRouter.js';
 
 // passport.use(
 //     new LocalStrategy(async (username, password, done) => {
@@ -51,18 +46,17 @@ const pool = new Pool({
 
 const app = express();
 
-app.set('views', path.join(import.meta.dirname, 'views'));
-app.set('view engine', 'ejs');
-
 app.use(session({ secret: 'cats', resave: false, saveUninitialized: false }));
 app.use(passport.session());
 app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 // app.use((req, res, next) => {
 //     res.locals.currentUser = req.user;
 //     next();
 // });
 
 app.use('/', indexRouter);
+app.use('/sign-up', authRouter);
 
 app.listen(3000, err => {
     if(err) throw err;
