@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import * as db from '../db/queries.js';
+import passport from 'passport';
 
 export const handleUserSignup = async (req, res) => {
     try {
@@ -30,6 +31,49 @@ export const handleUserSignup = async (req, res) => {
         console.error(error);
         return res.status(500).json({ error: "Internal server error." });
     }
+};
+
+export const handleUserLogin = (req, res, next) => {
+    passport.authenticate('local', (error, user, info) => {
+        if(error){
+            return res.status(500).json({ error: "Internal authentication error." });
+        }
+        if(!user){
+            return res.status(401).json({ success: false, error: info.message || 'Unauthorized.' });
+        }
+
+        req.logIn(user, (loginError) => {
+            if (loginError) {
+                return res.status(500).json({ error: "Session establishment failure." });
+            }
+
+            return res.status(200).json({
+                success: true,
+                message: "Authentication successful.",
+                user: { id: user.id, username: user.username, role: user.role }
+            });
+        });
+    })(req, res, next);
+};
+
+export const handleUserLogout = (req, res, next) => {
+    req.logout((error) => {
+        if(error){
+            return next(error);
+        }
+        
+        req.session.destroy((destroyError) => {
+            if(destroyError){
+                return res.status(500).json({ error: 'Logout failed.' })
+            }
+
+            res.clearCookie('connect.sid');
+            return res.status(200).json({
+                success: true,
+                message: 'Successfully logged out.'
+            });
+        });
+    });
 };
 
 export const getUsers = async (req, res) => {
