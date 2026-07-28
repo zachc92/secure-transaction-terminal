@@ -2,10 +2,10 @@ import express from 'express';
 import session from 'express-session';
 import path from 'node:path';
 import passport from './src/config/passport.js';
-// import { Strategy as LocalStrategy } from 'passport-local';
 
 import { indexRouter } from './src/routes/indexRouter.js';
 import { authRouter } from './src/routes/authRouter.js';
+import { transactionRouter } from './src/routes/transactionRouter.js';
 
 const app = express();
 
@@ -17,6 +17,7 @@ app.use(passport.session());
 
 app.use('/', indexRouter);
 app.use('/user', authRouter);
+app.use('/transaction', transactionRouter);
 
 app.listen(3000, err => {
     if(err) throw err;
